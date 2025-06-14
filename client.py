@@ -2,6 +2,7 @@ import socket
 import base64
 import sys
 
+
 def send_and_receive(sock, message, address, timeout=1, max_retries=5):
     retries = 0
     while retries < max_retries:
@@ -16,6 +17,7 @@ def send_and_receive(sock, message, address, timeout=1, max_retries=5):
             timeout *= 2
     print("Failed to receive response after multiple retries.")
     return None
+
 
 def download_file(server_address, port, filename):
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as client_socket:
@@ -55,15 +57,26 @@ def download_file(server_address, port, filename):
             close_request = f"FILE {filename} CLOSE"
             send_and_receive(client_socket, close_request, (server_address, file_port))
 
+
 def main():
-    if len(sys.argv) != 4:
-        print("Usage: python client.py <server_address> <port> <filename>")
+    if len(sys.argv) != 3:
+        print("Usage: python client.py <server_address> <port>")
         return
 
     server_address = sys.argv[1]
     port = int(sys.argv[2])
-    filename = sys.argv[3]
-    download_file(server_address, port, filename)
+
+    # Open the files.txt file and read the list of files to download
+    try:
+        with open("files.txt", "r") as file_list:
+            files_to_download = [line.strip() for line in file_list]
+    except FileNotFoundError:
+        print("Error: files.txt not found in the current directory.")
+        return
+
+    # Download each file in the list
+    for filename in files_to_download:
+        download_file(server_address, port, filename)
 
 
 if __name__ == "__main__":
