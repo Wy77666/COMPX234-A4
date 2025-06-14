@@ -4,7 +4,6 @@ import os
 import random
 import base64
 
-# Function to handle client requests
 def handle_client_request(client_address, filename, server_socket):
     # Check if the file exists
     if not os.path.exists(filename):
@@ -12,16 +11,15 @@ def handle_client_request(client_address, filename, server_socket):
         server_socket.sendto(response.encode(), client_address)
         return
 
-    # Get file size
+    # Get the file size
     file_size = os.path.getsize(filename)
-    port = random.randint(50000, 51000)  # Random port for data transmission
+    port = random.randint(50000, 51000)  # Randomly select a port
     response = f"OK {filename} SIZE {file_size} PORT {port}"
     server_socket.sendto(response.encode(), client_address)
 
-    # Create a new thread to handle file transmission
+    # Create a new thread to handle file transfer
     threading.Thread(target=handle_file_transmission, args=(filename, client_address, port)).start()
 
-# Function to handle file transmission
 def handle_file_transmission(filename, client_address, port):
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as file_socket:
         file_socket.bind(("localhost", port))
@@ -42,9 +40,8 @@ def handle_file_transmission(filename, client_address, port):
                     file_socket.sendto(response.encode(), client_address)
                     break
 
-# Main server function
 def main():
-    port = 51234  # Server port
+    port = 51234  # The server listens on the port
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server_socket:
         server_socket.bind(("localhost", port))
         print(f"Server running on port {port}")
