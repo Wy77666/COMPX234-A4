@@ -41,3 +41,19 @@ def handle_file_transmission(filename, client_address, port):
                     response = f"FILE {filename} CLOSE_OK"
                     file_socket.sendto(response.encode(), client_address)
                     break
+
+# Main server function
+def main():
+    port = 51234  # Server port
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server_socket:
+        server_socket.bind(("localhost", port))
+        print(f"Server running on port {port}")
+        while True:
+            request, client_address = server_socket.recvfrom(1024)
+            request_parts = request.decode().split(" ")
+            if request_parts[0] == "DOWNLOAD":
+                filename = request_parts[1]
+                threading.Thread(target=handle_client_request, args=(client_address, filename, server_socket)).start()
+
+if __name__ == "__main__":
+    main()
