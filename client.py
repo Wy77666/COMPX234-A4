@@ -55,3 +55,16 @@ def download_file(server_address, port, filename):
             close_request = f"FILE {filename} CLOSE"
             send_and_receive(client_socket, close_request, (server_address, file_port))
 
+def main():
+    if len(sys.argv) != 4:
+        print("Usage: python client.py <server_address> <port> <filename>")
+        return
+
+    server_address = sys.argv[1]
+    port = int(sys.argv[2])
+    filename = sys.argv[3]
+    download_file(server_address, port, filename)
+
+
+if __name__ == "__main__":
+    main()
